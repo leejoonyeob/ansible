@@ -1,0 +1,5 @@
+- name: 웹서버 index.html 파일 생성
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ files }}"

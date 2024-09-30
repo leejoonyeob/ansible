@@ -1,0 +1,40 @@
+---
+- name: 웹 서버 설정 해제
+  hosts: webserver
+  vars:
+    pkg_web: httpd
+    pkg_webs: mod_ssl
+    pkg_firewall: firewalld
+    svcs:
+      - httpd.service
+      - firewalld
+    fw_webs:
+      - http
+      - https
+
+  tasks:
+    - name: 서비스 중지
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ svcs }}"
+
+    - name: 패키지 제거
+      ansible.builtin.dnf:
+        name:
+          - "{{ pkg_web }}"
+          - "{{ pkg_webs }}"
+          - "{{ pkg_firewall }}"
+          - "{{ pkg_python }}"
+        state: absent
+
+    - name: 방화벽에서 웹 서비스 제거
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: disabled
+      loop: "{{ fw_webs }}"
+
+    - name: 방화벽 재로드
+      ansible.posix.firewalld:
+        state: reloaded

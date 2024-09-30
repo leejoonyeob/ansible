@@ -1,0 +1,21 @@
+---
+- name: 0) db 서버 설치 및 기동 
+  hosts: database_prod
+  vars:
+    packages:
+      - mariadb-server
+      - python3-PyMySQL
+    svc_db: mariadb  # db 서비스 이름 추가
+  tasks:
+    - name: db 패키지 설치 - mariadb-server, python3-PyMySQL
+      ansible.builtin.dnf:
+        name: "{{ item }}"  # imtem -> item으로 수정
+        state: present
+      loop: "{{ packages }}"
+      when: ansible_distribution == 'RedHat'
+    
+    - name: db 서비스 기동 - mariadb
+      ansible.builtin.service:
+        name: "{{ svc_db }}"
+        state: started
+        enabled: true

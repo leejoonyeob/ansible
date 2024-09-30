@@ -1,0 +1,21 @@
+---
+- name: 0) db 서버 제거 및 중지
+  hosts: all
+  vars:
+    packages:
+      - mariadb-server
+      - python3-PyMySQL
+    svc_db: mariadb  # db 서비스 이름 추가
+  tasks:
+    - name: db 패키지 삭제 - mariadb-server, python3-PyMySQL
+      ansible.builtin.dnf:
+        name: "{{ item }}"  # imtem -> item으로 수정
+        state: absent
+      loop: "{{ packages }}"
+      when: ansible_distribution == 'CentOS'
+    
+    - name: db 서비스 중지 - mariadb
+      ansible.builtin.service:
+        name: "{{ svc_db }}"
+        state: stopped
+        enabled: false

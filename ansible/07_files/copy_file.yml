@@ -1,0 +1,11 @@
+---
+- name: Test the copy module
+  hosts: all
+  gather_facts: no
+  become_user: devops
+  tasks:
+    - name: files/users.txt -- copy --> /home/devops/users.txt
+      copy:
+        src: files/users.txt
+        dest: /home/devops/users.txt
+        mode: '0640'

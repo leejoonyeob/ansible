@@ -1,0 +1,29 @@
+---
+- name: 웹 서버 설정
+  hosts: webservers
+  tasks:
+    ##################################
+    # 1. 웹서버 삭제 및 서비스 중지
+    # 2. 웹 서버 설정
+    # 3. 방화벽 설정
+    # 4. 웹서비스 확인
+    ##################################
+
+    # 1. 패키지 삭제
+    - name: 웹서버 삭제 및 서비스 중지
+      ansible.builtin.include_tasks:
+        file: tasks/remove_fw.yml
+      vars:
+        fw: ['http', 'https']
+
+    - name: 웹서버 삭제 및 서비스 중지
+      ansible.builtin.include_tasks:
+        file: tasks/remove_files.yml
+      vars:
+        files: ['/var/www/html/index.html']
+
+    - name: 웹서버 삭제 및 서비스 중지
+      ansible.builtin.include_tasks:
+        file: tasks/remove_pkg.yml
+      vars:
+        pkg: ['httpd', 'mod_ssl']

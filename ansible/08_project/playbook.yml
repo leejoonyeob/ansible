@@ -1,0 +1,50 @@
+---
+- name: 웹 서버 설정
+  hosts: webservers
+  tasks:
+    ##################################
+    # 1. 웹서버 삭제 및 서비스 중지
+    # 2. 웹 서버 설정
+    # 3. 방화벽 설정
+    # 4. 웹서비스 확인
+    ##################################
+
+    # 1. 패키지 삭제
+    - name: 웹서버 삭제 및 서비스 중지
+      ansible.builtin.include_tasks:
+        file: tasks/removepkg_stopsvc.yml
+      vars:
+        packages: ['httpd', 'mod_ssl']
+        services: ['httpd']
+      when: ansible_distribution == 'CentOS'  # CentOS에서만 실행
+
+    # 2. 웹 서버 설정 (index.html 삭제 등)
+    - name: 웹 서버 설정 - index.html 삭제
+      ansible.builtin.import_tasks:
+        file: tasks/webindex.yml
+      vars:
+        indexfile: /var/www/html/index.html
+      when: ansible_distribution_version == '9'  # 버전 9에서만 실행
+
+    # 3. 방화벽 설정
+    - name: 방화벽 패키지 삭제
+      ansible.builtin.include_tasks:
+        file: tasks/removepkg_stopsvc.yml
+      vars:
+        packages: ['firewalld']
+        services: ['firewalld']
+
+    - name: 방화벽 포트 해제
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: disabled  # 방화벽 포트 비활성화
+      loop: ['http', 'https']
+
+# 4. 웹서비스 확인 (필요시)
+- name: 웹 서비스 확인
+  ansible.builtin.import_playbook: plays/webverify.yml
+  vars:
+    myhost: localhost
+    myurl: http://ansible1.example.com

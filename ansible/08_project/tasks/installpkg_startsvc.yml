@@ -1,0 +1,10 @@
+- name: 웹 패키지 설치
+  ansible.builtin.dnf:
+    name: "{{ packages }}"  # 수정: 변수 이름 오타 수정
+    state: present
+- name: 웹 서비스 기동
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started  # 수정: 서비스를 시작 상태로 설정
+    enabled: true
+  loop: "{{ services }}"

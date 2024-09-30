@@ -1,0 +1,13 @@
+---
+- name: 사용자 삭제
+  hosts: devservers
+  remote_user: devops
+  become: true
+  tasks:
+    - name: 사용자 삭제 설정
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - demouser1
+        - demouser2

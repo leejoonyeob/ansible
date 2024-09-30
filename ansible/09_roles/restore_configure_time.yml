@@ -1,0 +1,20 @@
+---
+- name: Time Synchronization
+  hosts: datacenters
+
+  roles:
+    - rhel-system-roles.timesync
+  vars: 
+    - host_timezoen: "Asia/Seoul"
+
+  post_tasks:
+    - name: Set timezone
+      community.general.timezone:
+        name: "{{ host_timezoen }}"
+      notify: restart chronyd
+
+  handlers:
+    - name: restart chronyd
+      service:
+        name: chronyd
+        state: restarted

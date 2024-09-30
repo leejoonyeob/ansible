@@ -1,0 +1,13 @@
+---
+- name: restore create_user.yml
+  hosts: webservers
+  vars_files:
+    - secret2.yml
+
+  tasks:
+    - name: delete a user1
+      user: 
+        name: "{{ username }}"
+        state: absent
+        remove: yes
+

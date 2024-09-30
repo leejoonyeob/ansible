@@ -1,0 +1,20 @@
+- name: 설정 해제 작업
+  hosts: all
+  tasks:
+    - name: 패키지 제거 - {{ ansible_local.custom.general.package }}
+      ansible.builtin.dnf:
+        name: "{{ ansible_local.custom.general.package }}"
+        state: absent
+
+    - name: 서비스 중지 - {{ ansible_local.custom.general.service }}
+      ansible.builtin.service:
+        name: "{{ ansible_local.custom.general.service }}"
+        state: stopped
+        enabled: false
+
+    - name: 방화벽 해제 - {{ ansible_local.custom.general.fwsvc }}
+      ansible.posix.firewalld:
+        service: "{{ ansible_local.custom.general.fwsvc }}"
+        permanent: true
+        immediate: true
+        state: disabled

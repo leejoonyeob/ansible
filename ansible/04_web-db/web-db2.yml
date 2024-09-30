@@ -1,0 +1,42 @@
+---
+- name: 웹서비스 복구
+  hosts: web1
+  tasks:
+    - name: httpd 서비스 비활성화 및 중지
+      ansible.builtin.service:
+        name: httpd
+        state: stopped
+        enabled: no
+
+    - name: mariadb 서비스 비활성화 및 중지
+      ansible.builtin.service:
+        name: mariadb
+        state: stopped
+        enabled: no
+
+    - name: firewalld 서비스 비활성화 및 중지
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: 웹페이지 파일 삭제
+      ansible.builtin.file:
+        path: /var/www/html/index.php
+        state: absent
+
+    - name: 패키지 제거
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - mariadb-server
+          - php
+          - php-mysqlnd
+          - php-pdo
+        state: absent
+
+    - name: 방화벽에서 http 서비스 제거
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: disabled
